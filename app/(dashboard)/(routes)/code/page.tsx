@@ -2,7 +2,7 @@
 import axios from "axios";
 import * as z from "zod";
 import { Heading } from '@/components/heading';
-import { MessageSquare } from 'lucide-react';
+import { Code, MessageSquare } from 'lucide-react';
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { formSchema } from "./constants";
@@ -15,6 +15,7 @@ import { Loader } from "@/components/loader";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/user-avatar";
 import { BotAvatar } from "@/components/bot-avatar";
+import ReactMarkdown from 'react-markdown';
 
 
 interface Message {
@@ -22,7 +23,7 @@ interface Message {
     role: 'user' | 'server';
 }
 
-const ConversationPage = () => {
+const CodePage = () => {
     const router = useRouter();
     const [messages, setMessages] = useState<Message[]>([]);
 
@@ -42,7 +43,7 @@ const ConversationPage = () => {
             setMessages([...messages, newMessageUser]);
     
             
-            const response = await axios.post('/api/conversation', {
+            const response = await axios.post('/api/code', {
                 message: [{ role: 'user', content: values.prompt }]
             });
     
@@ -62,11 +63,11 @@ const ConversationPage = () => {
     return (
         <div>
             <Heading
-                title="Conversation"
-                description="Our most advanced conversation model."
-                icon={MessageSquare}
-                iconColor="text-violet-500"
-                bgColor="bg-violet-500/10"
+                title="Code Generation"
+                description="Advanced code generation model using descriptive text."
+                icon={Code}
+                iconColor="text-green-500"
+                bgColor="bg-green-500/10"
             />
             <div className='px-4 lg:px-8'>
                 <div>
@@ -114,9 +115,21 @@ const ConversationPage = () => {
                         {messages.map((msg, index) => (
                             <div key={index} className={cn("p-8 w-full flex items-start gap-x-8 rounded-lg", msg.role === "user" ? "bg-white border border-black/10" : "bg-muted")}>
                                 {msg.role === "user" ? <UserAvatar /> : <BotAvatar />}
-                                <p className="text-sm">
-                                    {msg.content}
-                                </p>
+                                <ReactMarkdown
+                                 components={{
+                                    pre: ({node, ...props}) => (
+                                        <div className="overflow-auto w-full my-2 bg-black/10 p-2 rounded-lg">
+                                         <pre {...props} />
+                                        </div>
+                                    ),
+                                    code: ({node , ...props}) => (
+                                        <code className="bg-black/10 rounded-lg p-1" {...props} />
+                                    )
+                                 }}
+                                 className="text-sm overflow-hidden leading-7"
+                                >
+                                {msg.content || ""}
+                                </ReactMarkdown>
                             </div>
                         ))}
 
@@ -127,4 +140,4 @@ const ConversationPage = () => {
     );
 };
 
-export default ConversationPage;
+export default CodePage;

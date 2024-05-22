@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import ChatCompletionRequestMessage from 'openai';
 import {ChatCompletionMessageParam} from 'openai/resources/index.mjs'
 
 
@@ -11,6 +12,8 @@ import {ChatCompletionMessageParam} from 'openai/resources/index.mjs'
 const openai= new OpenAI({
     apiKey: process.env['OPENAI_API_KEY']
 });
+
+
 
 export async function POST(
     req: Request
